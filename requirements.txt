@@ -1,0 +1,2 @@
+numpy==1.13
+# install tensorflow or tensorflow-gpu based on your environment

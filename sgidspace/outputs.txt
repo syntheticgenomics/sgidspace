@@ -1,0 +1,16 @@
+FIELD	ACTIVE	SCALE	TYPE	CLASSDICT	CLASSCOUNT	DATADIR	DATAFUN	MINHOT	TEXTLEN
+gene_name	Y	10	onehot	gene_name.classtable.txt	100000	.	.	0	.
+diamond	Y	10	onehot	diamond_cluster_id.classtable.txt	271530	.	cluster_id	0	.
+pfam	Y	16100	multihot	pfam.classtable.txt	16100	.	.	0	.
+interpro	Y	32978	multihot	interpro.classtable.txt	32978	.	.	0	.
+supfam	Y	2583	multihot	supfam_dict.classtable.txt	2583	.	supfam_tree.json.gz	0	.
+tigrfams	Y	4444	multihot	tigrfams.classtable.txt	4444	.	.	0	.
+gene3d	Y	2259	multihot	gene3d_ecflat.classtable.txt	2259	.	ecflat	0	.
+translation_tax_id	Y	83310	multihot	translation_tax_id_dict.classtable.txt	83310	.	tax_tree.abbr.json.gz	0	.
+ec_number	Y	5317	multihot	ec_number_ecflat.classtable.txt	5317	.	ecflat	0	.
+prosite	Y	2483	multihot	prosite.classtable.txt	2483	.	.	0	.
+go	Y	32037	multihot	go_dict.classtable.txt	32037	.	go_tree.json.gz	0	.
+smart	Y	1263	multihot	smart.classtable.txt	1263	.	.	0	.
+translation_description	Y	25000	multihot	translation_description_keywords.classtable.txt	25000	.	keywords	0	.
+embedding_autoencoder	Y	1000	embedding_autoencoder	NA	256	.	.	0	.
+

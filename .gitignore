@@ -1,0 +1,10 @@
+sgidspace.egg-info
+.project
+.pydevproject
+.coverage
+.tox
+coverage.xml
+nosetests.xml
+.settings
+.cache
+*.pyc
