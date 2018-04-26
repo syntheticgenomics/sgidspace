@@ -86,7 +86,7 @@ def generic_decoder(embedding, output):
         embedding = Dense(
             36, activation='elu', name='post_embedding_affine_' + output['name'], kernel_initializer='he_uniform'
         )(embedding)
-        x = BatchNormalization(name=output['name'])(embedding)
+        embedding = BatchNormalization(name=output['name'])(embedding)
 
     if output['type'] in ['onehot']:
         x = Dense(
