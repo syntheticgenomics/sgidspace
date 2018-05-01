@@ -12,7 +12,8 @@ def make_batch_processor(
         subdir,
         batch_size,
         outputs,
-        inference=False
+        inference=False,
+        classflags=None,
 ):
     seq_generator = SGISequenceGenerator(
         main_datadir + '/' + subdir + '/*.json*',
@@ -21,7 +22,8 @@ def make_batch_processor(
             seq_generator,
             batch_size,
             outputs,
-            inference=inference
+            inference=inference,
+            classflags=classflags
         )
 
 

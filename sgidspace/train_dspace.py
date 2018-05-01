@@ -228,7 +228,7 @@ def main():
     # Construct classflags
     classflags = None
     if args.tigrfam_filter:
-        classflags = {tigrfam: args.tigrfam_filter.split(',')}
+        classflags = {"tigrfams": args.tigrfam_filter.split(',')}
 
     # Train model
     train_model(args.epochs, args.datadir, args.output, outputs, classflags=classflags)
