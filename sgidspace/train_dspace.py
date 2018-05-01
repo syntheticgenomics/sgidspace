@@ -147,7 +147,8 @@ def train_model(
         outdir,
         outputs,
         n_gpus=1,
-        output_subdirectory=None
+        output_subdirectory=None,
+        classflags=None
 ):
     """
     Main function for setting up model and running training
@@ -175,10 +176,10 @@ def train_model(
 
     # Get the dataloaders
     dataloader_train = make_batch_processor(
-        main_datadir, 'train', 512, outputs
+        main_datadir, 'train', 512, outputs, classflags=classflags
     )
     dataloader_validation = make_batch_processor(
-        main_datadir, 'val', 512, outputs
+        main_datadir, 'val', 512, outputs, classflags=classflags
     )
 
     model = build_model(outputs)
@@ -218,13 +219,19 @@ def main():
         '-o', '--output', default='/output', help='output path to write output files to'
     )
     parser.add_argument('-e', '--epochs', type=int, default=10, help='Number of epochs')
+    parser.add_argument('--tigrfam_filter', type=str, help='Skip records containing at least one of the listed tifgrfams. (comma separated)')
     args = parser.parse_args()
 
     # Construct outputs
     outputs = load_outputs(os.path.abspath(os.path.join(os.path.dirname(__file__), 'outputs.txt')))
 
+    # Construct classflags
+    classflags = None
+    if args.tigrfam_filter:
+        classflags = {tigrfam: args.tigrfam_filter.split(',')}
+
     # Train model
-    train_model(args.epochs, args.datadir, args.output, outputs)
+    train_model(args.epochs, args.datadir, args.output, outputs, classflags=classflags)
 
 
 if __name__ == '__main__':

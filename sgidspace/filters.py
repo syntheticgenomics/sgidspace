@@ -55,14 +55,22 @@ def filter_invalid_sequence(gen, source_name, valid_alphabet):
         yield record
 
 
+def record_hasvalue(field, values):
+    if field in record:
+        if type(record[field]) is list:
+            for x in record[field]:
+                if x in values:
+                    return True
+        else:
+            return(record[field] == values)
+    return False
+
+
 def filter_classflags(gen, classflags):
     for record in gen:
         ok = True
         for field in classflags:
-            if field not in record:
-                ok = False
-                break
-            elif record[field] not in classflags[field]:
+            if record_hasvalue(field, classflags[field]):
                 ok = False
                 break
         if ok:
@@ -77,12 +85,12 @@ def filter_uncharacterized(gen, outputs):
                 break
 
 
-def filter_records(gen, outputs):
+def filter_records(gen, outputs, classflags=None):
     gen = filter_invalid_sequence(gen, 'protein_sequence', IUPAC_CODES)
     gen = filter_max_len(gen, 2000)
 
-    #if 'classflags' in hp:
-    #    gen = filter_classflags(gen, [])
+    if 'classflags':
+        gen = filter_classflags(gen, classflags)
 
     o = []
     for output in outputs:
