@@ -12,6 +12,7 @@ class SGISequenceGenerator(object):
             filename_pattern,
             shard_count=None,
             shard_index=None,
+            unbounded_iteration=True,
     ):
         self.filename_pattern = filename_pattern
         self.filenames = glob.glob(filename_pattern)
@@ -36,7 +37,7 @@ class SGISequenceGenerator(object):
         self.data_handle = None
 
         self.reset_count = 0
-        # self.reset()
+        self.unbounded_iteration = unbounded_iteration
 
     def file_open(self, index):
         """
@@ -121,4 +122,6 @@ class SGISequenceGenerator(object):
         start_reset_count = self.reset_count
         while True:
             record = self.read_next_line()
+            if not self.unbounded_iteration and start_reset_count != self.reset_count:
+                break
             yield record

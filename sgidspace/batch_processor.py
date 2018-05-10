@@ -14,9 +14,11 @@ def make_batch_processor(
         outputs,
         inference=False,
         classflags=None,
+        unbounded_iteration=True,
 ):
     seq_generator = SGISequenceGenerator(
         main_datadir + '/' + subdir + '/*.json*',
+        unbounded_iteration=unbounded_iteration
     )
     return BatchProcessor(
             seq_generator,
@@ -92,6 +94,8 @@ class BatchProcessor():
         return self
 
     def next(self):
+        if self.done:
+            raise StopIteration()
         return self.fetch_batch()
 
     def __init__(
@@ -106,7 +110,7 @@ class BatchProcessor():
         self.seq_generator = seq_generator
         self.outputs = outputs
         self.inference = inference
-
+        self.done = False
         self.input_symbols = {label: i for i, label in enumerate(IUPAC_CODES)}
 
         self.class_index = {}
@@ -126,6 +130,7 @@ class BatchProcessor():
         for i in xrange(self.batch_size):
             r = next(self.seq_generator, None)
             if r is None:
+                self.done = True
                 break
 
             records.append(r)

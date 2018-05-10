@@ -130,7 +130,7 @@ def json_inference(blob, batch_size, inf):
 
 def datadir_inference(datadir, batch_size, inf, from_embed=False):
     dataloader = make_batch_processor(
-        datadir, '', batch_size, outputs=inf.outputs, inference=True
+        datadir, '', batch_size, outputs=inf.outputs, inference=True, unbounded_iteration=False
     )
     return inf.generate(dataloader)
 
