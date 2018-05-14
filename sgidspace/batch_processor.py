@@ -122,7 +122,7 @@ class BatchProcessor():
                 data_dicts[o['field']] = o['datafun']
 
         self.seq_generator = transform_records(self.seq_generator, data_dicts)
-        self.seq_generator = filter_records(self.seq_generator, outputs, classflags=classflags)
+        self.seq_generator = filter_records(self.seq_generator, outputs, classflags=classflags, inference=inference)
 
     def fetch_records(self):
         records = []

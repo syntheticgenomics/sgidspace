@@ -85,9 +85,12 @@ def filter_uncharacterized(gen, outputs):
                 break
 
 
-def filter_records(gen, outputs, classflags=None):
+def filter_records(gen, outputs, classflags=None, inference=False):
     gen = filter_invalid_sequence(gen, 'protein_sequence', IUPAC_CODES)
     gen = filter_max_len(gen, 2000)
+
+    if inference:
+        return gen
 
     if classflags:
         gen = filter_classflags(gen, classflags)
