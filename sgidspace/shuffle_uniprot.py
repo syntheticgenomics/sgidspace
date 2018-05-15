@@ -52,12 +52,16 @@ class ShuffleJsonFiles(object):
 
         file_handle.close()
 
-    def main(self):
+    def run(self):
         self._import_all_records()
         self._shuffle_records()
         self._write_output_files()
 
 
-if __name__ == '__main__':
+def main():
     sjf = ShuffleJsonFiles()
-    sjf.main()
+    sjf.run()
+
+
+if __name__ == '__main__':
+    main()

@@ -27,6 +27,8 @@ setup(name=name,
         'console_scripts': [
             'train_dspace = sgidspace.train_dspace:main',
             'infer_dspace = sgidspace.inference:main',
+            'parse_split_uniprot_dspace = sgidspace.parse_split_uniprot:main',
+            'shuffle_uniprot_dspace = sgidspace.shuffle_uniprot:main',
         ]
       },
       package_data={'sgidspace': ['data/*']},
