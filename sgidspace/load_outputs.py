@@ -50,7 +50,7 @@ def validate_output_type(output_type):
         ))
 
 
-def load_outputs(outputs_file, datadir='None'):
+def load_outputs(outputs_file, datadir=None):
     if not datadir:
         datadir = os.path.abspath(os.path.join(os.path.dirname(__file__), 'data'))
 
