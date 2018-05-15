@@ -45,7 +45,7 @@ class InferenceEngine(object):
         self.skip_tasks = skip_tasks
         self.from_embed = from_embed
 
-        self.outputs = load_outputs(os.path.abspath(os.path.join(os.path.dirname(__file__), 'outputs.txt')))
+        self.outputs = load_outputs('outputs.txt')
 
     def _signif(self, x, n=3):
         return np.around(x.astype(np.float64), n)

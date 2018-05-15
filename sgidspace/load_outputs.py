@@ -5,8 +5,8 @@ import gzip
 TYPES = {'boolean', 'onehot', 'multihot', 'numeric', 'embedding_autoencoder'}
 
 
-def load_class_table(path, datadir):
-    path = os.path.abspath(os.path.join(os.path.dirname(__file__), datadir, path))
+def _load_class_table(filename, datadir):
+    path = os.path.join(datadir, filename)
 
     labels = []
     rel_freq = []
@@ -50,9 +50,12 @@ def validate_output_type(output_type):
         ))
 
 
-def load_outputs(outputs_file, datadir='../data'):
+def load_outputs(outputs_file, datadir='None'):
+    if not datadir:
+        datadir = os.path.abspath(os.path.join(os.path.dirname(__file__), 'data'))
+
     outputs = list()
-    with open(outputs_file) as f:
+    with open(os.path.join(datadir, outputs_file)) as f:
         next(f)
         for line in f:
             if line.startswith("#"):
@@ -75,14 +78,14 @@ def load_outputs(outputs_file, datadir='../data'):
 
             if cols[4] != 'NA':
                 output['classcount'] = int(cols[5])
-                ct = load_class_table(cols[4], datadir)
+                ct = _load_class_table(cols[4], datadir)
                 output['class_labels'] = ct['labels'][:output['classcount']]
                 if 'freq' in ct:
                     output['class_freq'] = ct['freq'][:output['classcount']]
 
             if cols[7] != '.':
                 f = cols[7]
-                path = os.path.abspath(os.path.join(os.path.dirname(__file__), datadir, f))
+                path = os.path.join(datadir, f)
                 if os.path.exists(path):
                     output['datafun'] = json.load(gzip.open(path))
                     output['name'] = output['field'] + '_dict'

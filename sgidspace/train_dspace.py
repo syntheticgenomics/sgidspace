@@ -223,7 +223,7 @@ def main():
     args = parser.parse_args()
 
     # Construct outputs
-    outputs = load_outputs(os.path.abspath(os.path.join(os.path.dirname(__file__), 'outputs.txt')))
+    outputs = load_outputs('outputs.txt')
 
     # Construct classflags
     classflags = None

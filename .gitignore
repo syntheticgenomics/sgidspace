@@ -9,3 +9,5 @@ nosetests.xml
 .cache
 *.pyc
 .pytest_cache
+build
+dist

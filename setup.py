@@ -26,6 +26,8 @@ setup(name=name,
       entry_points={
         'console_scripts': [
             'train_dspace = sgidspace.train_dspace:main',
+            'infer_dspace = sgidspace.inference:main',
         ]
       },
+      package_data={'sgidspace': ['data/*']},
       zip_safe=False)
