@@ -15,6 +15,7 @@ def make_batch_processor(
         inference=False,
         classflags=None,
         unbounded_iteration=True,
+        from_embed=False
 ):
     seq_generator = SGISequenceGenerator(
         main_datadir + '/' + subdir + '/*.json*',
@@ -25,7 +26,8 @@ def make_batch_processor(
             batch_size,
             outputs,
             inference=inference,
-            classflags=classflags
+            classflags=classflags,
+            from_embed=from_embed
         )
 
 
@@ -104,7 +106,8 @@ class BatchProcessor():
             batch_size,
             outputs,
             inference=False,
-            classflags=None
+            classflags=None,
+            from_embed=False
     ):
         self.batch_size = batch_size
         self.seq_generator = seq_generator
@@ -112,6 +115,10 @@ class BatchProcessor():
         self.inference = inference
         self.done = False
         self.input_symbols = {label: i for i, label in enumerate(IUPAC_CODES)}
+        self.from_embed = from_embed
+
+        if from_embed:
+            self.esize = 256
 
         self.class_index = {}
         data_dicts = {}
@@ -122,7 +129,9 @@ class BatchProcessor():
                 data_dicts[o['field']] = o['datafun']
 
         self.seq_generator = transform_records(self.seq_generator, data_dicts)
-        self.seq_generator = filter_records(self.seq_generator, outputs, classflags=classflags, inference=inference)
+
+        if not from_embed:
+            self.seq_generator = filter_records(self.seq_generator, outputs, classflags=classflags, inference=inference)
 
     def fetch_records(self):
         records = []
@@ -142,14 +151,23 @@ class BatchProcessor():
 
         # initialize input
         X = {}
-        X['sequence_input'] = np.zeros(
-            [
-                len(records),
-                2000,
-                len(IUPAC_CODES),
-            ],
-            dtype=K.floatx(),
-        )
+        if self.from_embed:
+            X['embedding'] = np.zeros(
+                [
+                    len(records),
+                    self.esize,
+                ],
+                dtype=K.floatx(),
+            )
+        else:
+            X['sequence_input'] = np.zeros(
+                [
+                    len(records),
+                    2000,
+                    len(IUPAC_CODES),
+                ],
+                dtype=K.floatx(),
+            )
         Y = {}
 
         # initialize output buffer
@@ -162,36 +180,39 @@ class BatchProcessor():
         for i in xrange(len(records)):
             record = records[i]
 
-            # input_sequence
-            input_sequence = record['protein_sequence']
-            for sequence_index in xrange(len(input_sequence)):
-                symbol_index = self.input_symbols.get(input_sequence[sequence_index])
-                if symbol_index is not None:
-                    X['sequence_input'][i, sequence_index, symbol_index] = 1
+            if self.from_embed:
+                X['embedding'][i,:] = np.array(record['embedding'], dtype=K.floatx())
+            else:
+                # input_sequence
+                input_sequence = record['protein_sequence']
+                for sequence_index in xrange(len(input_sequence)):
+                    symbol_index = self.input_symbols.get(input_sequence[sequence_index])
+                    if symbol_index is not None:
+                        X['sequence_input'][i, sequence_index, symbol_index] = 1
 
-            # add zero padding for the rest
-            aai = self.input_symbols.get("*")
-            X['sequence_input'][i, sequence_index + 1:, aai] = 1
+                # add zero padding for the rest
+                aai = self.input_symbols.get("*")
+                X['sequence_input'][i, sequence_index + 1:, aai] = 1
 
-            for o in self.outputs:
-                output_name = o['name']
-                r = get_nested_key(record, o['name'])
+                for o in self.outputs:
+                    output_name = o['name']
+                    r = get_nested_key(record, o['name'])
 
-                if r is not None:
-                    if o['type'] == 'numeric':
-                        Y[output_name][i] = r
-                    elif o['type'] == 'boolean':
-                        Y[output_name][i, int(r)] = 1
-                    elif o['type'] in ['onehot', 'multihot']:
-                        for label in r:
-                            index = self.class_index[output_name].get(str(label))
-                            if index is not None:
-                                Y[output_name][i, index] = 1
-                            elif o['type'] == 'onehot':
-                                Y[output_name][i, o['classcount'] - 1] = 1
-                else:
-                    if o['type'] == 'onehot':
-                        Y[output_name][i, o['classcount'] - 1] = 1
+                    if r is not None:
+                        if o['type'] == 'numeric':
+                            Y[output_name][i] = r
+                        elif o['type'] == 'boolean':
+                            Y[output_name][i, int(r)] = 1
+                        elif o['type'] in ['onehot', 'multihot']:
+                            for label in r:
+                                index = self.class_index[output_name].get(str(label))
+                                if index is not None:
+                                    Y[output_name][i, index] = 1
+                                elif o['type'] == 'onehot':
+                                    Y[output_name][i, o['classcount'] - 1] = 1
+                    else:
+                        if o['type'] == 'onehot':
+                            Y[output_name][i, o['classcount'] - 1] = 1
         
         if self.inference:
             return X, records

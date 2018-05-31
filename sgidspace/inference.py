@@ -47,6 +47,17 @@ class InferenceEngine(object):
 
         self.outputs = load_outputs('outputs.txt')
 
+        if self.from_embed:
+            inputs, outputs = build_network(self.outputs, from_embed=True)
+            model2 = Model(inputs=inputs, outputs=outputs)
+            for layer in model2.layers:
+                try:
+                    layer.set_weights(self.model.get_layer(layer.name).get_weights())
+                except:
+                    pass
+            self.model = model2
+            self.eauto_index = len(self.model.outputs) - 1
+
     def _signif(self, x, n=3):
         return np.around(x.astype(np.float64), n)
 
@@ -97,8 +108,9 @@ class InferenceEngine(object):
                     else:
                         out[output['name']] = self._format_probs(output, probs)
 
-                probs = self._signif(yhat[self.embedding_index][recordi, :], self.eprecision)
-                out['embedding'] = probs.tolist()
+                if not self.from_embed:
+                    probs = self._signif(yhat[self.embedding_index][recordi, :], self.eprecision)
+                    out['embedding'] = probs.tolist()
 
                 if self.eauto_index != None:
                     probs = self._signif(yhat[self.eauto_index][recordi, :], self.eprecision)
@@ -124,13 +136,13 @@ def json_inference(blob, batch_size, inf):
             yield q
 
     seq_gen = query_gen(blob)
-    dataloader = BatchProcessor(seq_gen, batch_size, outputs=inf.outputs, inference=True)
+    dataloader = BatchProcessor(seq_gen, batch_size, outputs=inf.outputs, inference=True, from_embed=from_embed)
     return inf.generate(dataloader)
 
 
 def datadir_inference(datadir, batch_size, inf, from_embed=False):
     dataloader = make_batch_processor(
-        datadir, '', batch_size, outputs=inf.outputs, inference=True, unbounded_iteration=False
+        datadir, '', batch_size, outputs=inf.outputs, inference=True, unbounded_iteration=False, from_embed=from_embed
     )
     return inf.generate(dataloader)
 

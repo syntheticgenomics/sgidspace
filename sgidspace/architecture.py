@@ -6,41 +6,46 @@ import numpy as np
 from sgidspace.sequence_generator import IUPAC_CODES
 
 
-def build_network(outputs):
+def build_network(outputs, from_embed=False):
     
     # Inputs
-    with tf.variable_scope('sequence_input') as scope:
-        seq_input = Input(shape=(2000, len(IUPAC_CODES)), dtype='float32', name='sequence_input')
+    if from_embed:
+        with tf.variable_scope('embedding_input') as scope:
+            embedding = Input(shape=[256], dtype='float32', name='embedding')
+    else:
+        with tf.variable_scope('sequence_input') as scope:
+            seq_input = Input(shape=(2000, len(IUPAC_CODES)), dtype='float32', name='sequence_input')
 
     # Encoder
     with tf.variable_scope('encoder') as scope:
-        x = Conv1D(16, 3, input_shape=(None, 2000, len(IUPAC_CODES)), activation='elu', padding='same', name='encoder_conv0', kernel_initializer='he_uniform')(seq_input)
-        x = BatchNormalization(name='encoder_bn0')(x)
-        x = Conv1D(24, 3, activation='elu', padding='same', name='encoder_conv1', kernel_initializer='he_uniform')(x)
-        x = BatchNormalization(name='encoder_bn1')(x)
-        x = MaxPooling1D()(x)
+        if not from_embed:
+            x = Conv1D(16, 3, input_shape=(None, 2000, len(IUPAC_CODES)), activation='elu', padding='same', name='encoder_conv0', kernel_initializer='he_uniform')(seq_input)
+            x = BatchNormalization(name='encoder_bn0')(x)
+            x = Conv1D(24, 3, activation='elu', padding='same', name='encoder_conv1', kernel_initializer='he_uniform')(x)
+            x = BatchNormalization(name='encoder_bn1')(x)
+            x = MaxPooling1D()(x)
         
-        x = Conv1D(32, 5, activation='elu', padding='same', name='encoder_conv2', kernel_initializer='he_uniform')(x)
-        x = BatchNormalization(name='encoder_bn2')(x)
-        x = Conv1D(48, 5, activation='elu', padding='same', name='encoder_conv3', kernel_initializer='he_uniform')(x)
-        x = BatchNormalization(name='encoder_bn3')(x)
-        x = MaxPooling1D()(x)
+            x = Conv1D(32, 5, activation='elu', padding='same', name='encoder_conv2', kernel_initializer='he_uniform')(x)
+            x = BatchNormalization(name='encoder_bn2')(x)
+            x = Conv1D(48, 5, activation='elu', padding='same', name='encoder_conv3', kernel_initializer='he_uniform')(x)
+            x = BatchNormalization(name='encoder_bn3')(x)
+            x = MaxPooling1D()(x)
         
-        x = Conv1D(64, 7, activation='elu', padding='same', name='encoder_conv4', kernel_initializer='he_uniform')(x)
-        x = BatchNormalization(name='encoder_bn4')(x)
-        x = Conv1D(96, 7, activation='elu', padding='same', name='encoder_conv5', kernel_initializer='he_uniform')(x)
-        x = BatchNormalization(name='encoder_bn5')(x)
-        x = MaxPooling1D()(x)
+            x = Conv1D(64, 7, activation='elu', padding='same', name='encoder_conv4', kernel_initializer='he_uniform')(x)
+            x = BatchNormalization(name='encoder_bn4')(x)
+            x = Conv1D(96, 7, activation='elu', padding='same', name='encoder_conv5', kernel_initializer='he_uniform')(x)
+            x = BatchNormalization(name='encoder_bn5')(x)
+            x = MaxPooling1D()(x)
 
-        x = Flatten()(x)
-        x = Dense(2048, activation='elu', kernel_initializer='he_uniform', name='encoder_aff0')(x)
-        x = BatchNormalization(name='encoder_bn6')(x)
-        x = Dense(1024, activation='elu', kernel_initializer='he_uniform', name='encoder_aff1')(x)
-        x = BatchNormalization(name='encoder_bn7')(x)
-        x = Dense(512, activation='elu', kernel_initializer='he_uniform', name='encoder_aff2')(x)
-        x = BatchNormalization(name='encoder_bn8')(x)
-        x = Dense(256, activation='elu', kernel_initializer='he_uniform', name='encoder_aff3')(x)
-        embedding = BatchNormalization(name='embedding')(x)
+            x = Flatten()(x)
+            x = Dense(2048, activation='elu', kernel_initializer='he_uniform', name='encoder_aff0')(x)
+            x = BatchNormalization(name='encoder_bn6')(x)
+            x = Dense(1024, activation='elu', kernel_initializer='he_uniform', name='encoder_aff1')(x)
+            x = BatchNormalization(name='encoder_bn7')(x)
+            x = Dense(512, activation='elu', kernel_initializer='he_uniform', name='encoder_aff2')(x)
+            x = BatchNormalization(name='encoder_bn8')(x)
+            x = Dense(256, activation='elu', kernel_initializer='he_uniform', name='encoder_aff3')(x)
+            embedding = BatchNormalization(name='embedding')(x)
 
         x = Dense(128, activation='elu', kernel_initializer='he_uniform', name='embed_auto0')(embedding)
         x = BatchNormalization(name='embed_auto_bn0')(x)
@@ -77,7 +82,10 @@ def build_network(outputs):
             else:
                 output_layers.append(generic_decoder(embedding, o))
 
-    return [seq_input], output_layers
+    if from_embed:
+        return [embedding], output_layers
+    else:
+        return [seq_input], output_layers
 
 
 def generic_decoder(embedding, output):
