@@ -189,7 +189,6 @@ def train_model(
     # Draw model graph
     plot_model(model, to_file=outdir + '/model.png', show_shapes=True)
 
-    # for mbatch in xrange(0, epochs):
     model.fit_generator(
         dataloader_train,
         steps_per_epoch=1000,
