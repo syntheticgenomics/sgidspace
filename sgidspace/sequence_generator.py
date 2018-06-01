@@ -57,8 +57,6 @@ class SGISequenceGenerator(object):
         else:
             self.data_handle = open(filename, 'rb')
 
-        # print("Opening " + filename)
-
     def reset(self):
         """
         Resets the starting index of this dataset to zero. Useful for calling
@@ -82,9 +80,6 @@ class SGISequenceGenerator(object):
         else:
             self.filename_index += 1
             self.file_open(self.filename_index)
-            # print 'opened file {} of {}'.format(
-            #     self.filename_index, len(self.filenames)
-            # )
 
     def read_next_line(self):
         """

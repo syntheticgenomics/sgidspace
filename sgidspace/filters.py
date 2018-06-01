@@ -1,5 +1,4 @@
 import logging
-import numpy as np
 
 from sgidspace.sequence_generator import IUPAC_CODES
 
