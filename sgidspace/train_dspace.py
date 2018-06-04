@@ -1,11 +1,9 @@
 import argparse
-import json
 import os
 import subprocess
 
 from sgidspace.batch_processor import make_batch_processor
 from sgidspace.architecture import build_network
-import tensorflow as tf
 from keras.models import Model
 from keras.callbacks import TensorBoard, ModelCheckpoint
 from keras.utils import plot_model
@@ -16,8 +14,6 @@ from sgidspace.sgikeras.models import patch_all, load_model
 patch_all()
 from sgidspace.sgikeras.metrics import precision, recall, fmeasure
 
-import keras.backend as K
-import tensorflow as tf
 import numpy as np
 
 from datetime import datetime
@@ -193,7 +189,6 @@ def train_model(
     # Draw model graph
     plot_model(model, to_file=outdir + '/model.png', show_shapes=True)
 
-    # for mbatch in xrange(0, epochs):
     model.fit_generator(
         dataloader_train,
         steps_per_epoch=1000,

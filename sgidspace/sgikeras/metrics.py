@@ -1,6 +1,4 @@
 from keras import backend as K
-import numpy as np
-from keras.metrics import mean_absolute_percentage_error
 
 def precision(y_true, y_pred):
     """Precision metric.

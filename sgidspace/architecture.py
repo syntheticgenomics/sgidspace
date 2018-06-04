@@ -1,8 +1,6 @@
 from keras.layers import Input, Conv1D, Dense, MaxPooling1D, Flatten, Activation, Reshape, Subtract
 from keras.layers.normalization import BatchNormalization
 import tensorflow as tf
-from keras import backend as K
-import numpy as np
 from sgidspace.sequence_generator import IUPAC_CODES
 
 

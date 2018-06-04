@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 import argparse
-import sys
 import json
 import gzip
 import math
@@ -8,7 +7,6 @@ import os
 import numpy as np
 
 from sgidspace.batch_processor import make_batch_processor, BatchProcessor
-from sgidspace.sequence_generator import IUPAC_CODES
 from sgidspace.sgikeras.models import patch_all, load_model
 patch_all()
 from sgidspace.sgikeras.metrics import precision, recall, fmeasure
