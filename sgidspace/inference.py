@@ -134,7 +134,7 @@ def json_inference(blob, batch_size, inf):
             yield q
 
     seq_gen = query_gen(blob)
-    dataloader = BatchProcessor(seq_gen, batch_size, outputs=inf.outputs, inference=True, from_embed=from_embed)
+    dataloader = BatchProcessor(seq_gen, batch_size, outputs=inf.outputs, inference=True, from_embed=inf.from_embed)
     return inf.generate(dataloader)
 
 
