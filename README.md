@@ -1,6 +1,9 @@
 
 # Synthetic Genomics D-SPACE Public Library
 
+## Demo site
+A public demo of the D-SPACE annotation and search capabilities is available here https://dspace.bio/.
+
 ## Install
 
 * Clone this repo.
